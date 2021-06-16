@@ -82,21 +82,71 @@ public class HomeController {
         return "items";
     }
 
-    @PostMapping("/saveitem")
+    @PostMapping("saveitem")
     public String save_item(@ModelAttribute("Item")Items item){
-        if ((item.getName()!=null && item.getPrice()!=0||(item.getStock()!=0))){
-            int pos = shoppingCart.check_item(item.getName());
-            if(pos>=0){
+        try {
+            if ((item.getName() != null && item.getPrice() != 0) && (item.getStock() != 0)) {
+                int pos = shoppingCart.check_item(item.getName());
+                System.out.println(pos);
+                if (pos >= 0) {
+                    Items items = shoppingCart.getItems().get(pos);
+                    items.setName(item.getName().trim());
+                    items.setPrice(item.getPrice());
+                    items.setStock(item.getStock());
+                    return "redirect:items";
+                } else {
+                    shoppingCart.add_item(item);
+                }
+            }
+        }catch(Exception e){
+            System.out.println("Exception occurs => "+e.getMessage());
+        }finally {
+            return "redirect:items";
+        }
+
+
+
+
+    }
+
+    @PostMapping("updateitem")
+    public String update_item(@RequestParam("name")String[] name,@ModelAttribute("Item")Items item){
+        if ((item.getName() != null && item.getPrice() != 0) && (item.getStock() != 0)) {
+            int pos = shoppingCart.check_item(name[0]);
+            if (pos >= 0) {
                 Items items = shoppingCart.getItems().get(pos);
-                items.setName(item.getName());
+                items.setName(name[1]);
                 items.setPrice(item.getPrice());
                 items.setStock(item.getStock());
                 return "redirect:items";
-            }
-            else{
+            } else {
                 shoppingCart.add_item(item);
             }
+        }
+        return "redirect:items";
+    }
 
+
+    @GetMapping("/itemupd")
+    public String upd_item(@RequestParam("name")String name, Model model){
+        if(name!= null){
+            int pos = shoppingCart.check_item(name);
+            if(pos>=0){
+                Items item = shoppingCart.getItems().get(pos);
+                model.addAttribute("Item", item);
+                return "item_form_update";
+            }
+        }
+        return "redirect:items";
+    }
+
+    @GetMapping("/itemdel")
+    public String del_item(@RequestParam("name")String name){
+        if(name!=null){
+            int pos = shoppingCart.check_item(name);
+            if(pos>=0){
+                shoppingCart.getItems().remove(pos);
+            }
         }
         return "redirect:items";
     }
