@@ -30,6 +30,12 @@
                     <a th:href="@{shop(customer=${a.name})}" class="btn btn-info">
                         Shop
                     </a>
+                    <a th:href="@{updcust(customer=${a.name})}" class="btn btn-info">
+                        Update Customer
+                    </a>
+                    <a th:href="@{delcust(customer=${a.name})}" class="btn btn-danger">
+                        Delete Customer
+                    </a>
                 </td>
             </tr>
         </tbody>

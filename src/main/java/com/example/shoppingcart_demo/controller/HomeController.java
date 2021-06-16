@@ -98,15 +98,15 @@ public class HomeController {
                     shoppingCart.add_item(item);
                 }
             }
-        }catch(Exception e){
+        }
+        catch(Exception e)
+        {
             System.out.println("Exception occurs => "+e.getMessage());
-        }finally {
+        }
+        finally
+        {
             return "redirect:items";
         }
-
-
-
-
     }
 
     @PostMapping("updateitem")
@@ -149,5 +149,44 @@ public class HomeController {
             }
         }
         return "redirect:items";
+    }
+
+    @GetMapping("/updcust")
+    public String upd_cust(@RequestParam("customer")String name, Model model){
+        if (name!=null){
+            int pos = shoppingCart.check_cust(name);
+            if(pos>=0){
+                Customer customer = shoppingCart.getCustomers().get(pos);
+                model.addAttribute("customer",customer);
+                return "cust_update";
+            }
+        }
+        return "init";
+    }
+
+    @PostMapping("/updatecust")
+    public String savecust(@RequestParam("name")String[] name,@ModelAttribute("customer")Customer customer)
+    {
+        if(customer.getName()!=null && customer.getContact()!= null){
+            int pos = shoppingCart.check_cust(name[0]);
+            if (pos>=0){
+                Customer customer1=shoppingCart.getCustomers().get(pos);
+                customer1.setName(name[1]);
+                customer1.setContact(customer.getContact());
+                return "redirect:init";
+            }
+        }
+        return "redirect:init";
+    }
+
+    @GetMapping("/delcust")
+    public String del_cust(@RequestParam("customer") String name){
+        if (name!= null){
+            int pos = shoppingCart.check_cust(name);
+            if (pos>=0){
+                shoppingCart.getCustomers().remove(pos);
+            }
+        }
+        return "redirect:init";
     }
 }
