@@ -69,4 +69,35 @@ public class HomeController {
         }
         return "redirect:init";
     }
+
+    @GetMapping("/additems")
+    public String add_item(Model model){
+        model.addAttribute("Item", new Items());
+        return "item_form";
+    }
+
+    @GetMapping("/items")
+    public String listitems(Model model){
+        model.addAttribute("Items",shoppingCart.getItems());
+        return "items";
+    }
+
+    @PostMapping("/saveitem")
+    public String save_item(@ModelAttribute("Item")Items item){
+        if ((item.getName()!=null && item.getPrice()!=0||(item.getStock()!=0))){
+            int pos = shoppingCart.check_item(item.getName());
+            if(pos>=0){
+                Items items = shoppingCart.getItems().get(pos);
+                items.setName(item.getName());
+                items.setPrice(item.getPrice());
+                items.setStock(item.getStock());
+                return "redirect:items";
+            }
+            else{
+                shoppingCart.add_item(item);
+            }
+
+        }
+        return "redirect:items";
+    }
 }
